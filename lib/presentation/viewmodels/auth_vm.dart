@@ -4,5 +4,8 @@ import 'package:flutter/material.dart';
 class AuthVM extends ChangeNotifier{
   final IAuthRepository _authRepository;
 
-  AuthVM({required IAuthRepository authRepository}) : _authRepository = authRepository;
+  AuthVM({required IAuthRepository authRepository}) 
+  : _authRepository = authRepository;
+
+  
 }
