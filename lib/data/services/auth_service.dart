@@ -1,29 +1,33 @@
 import 'dart:convert';
+import 'package:first_flutter/data/models/profile.dart';
 import 'package:first_flutter/data/models/user.dart';
 import 'package:http/http.dart' as http;
 
 abstract class IAuthenticationService {
   Future<User> validateLogin(String username, String password);
+  Future<Profile> getProfile(User user);
 }
 
 class AuthenticationService implements IAuthenticationService {
-  @override
   Future<User> validateLogin(String username, String password) async {
-    final url = Uri.parse('https://httpbin.org/basic-auth/admin/adminpassword');
-    final response = await http.get(
+    final url = Uri.parse('https://dummyjson.com/auth/login');
+    final response = await http.post(
       url,
-      headers: {
-        //Fa referència a AUTENTICAR no AUTORITZAR
-        'Authorization':
-            'Basic ${base64Encode(utf8.encode('$username:$password'))}',
-      },
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'username': username, 'password': password}),
     );
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body)); // HTTP OK
-    } else if (response.statusCode == 401) {
-      throw Exception('Invalid credentials'); // HTTP Unauthorized
+    } else if (response.statusCode == 400) {
+      final errorResponse = jsonDecode(response.body);
+      throw Exception('${errorResponse['message']}'); // HTTP Bad Request
     } else {
       throw Exception('Login error'); // HTTP Error
     }
+  }
+
+  @override
+  Future<Profile> getProfile(User user) async {
+    
   }
 }
