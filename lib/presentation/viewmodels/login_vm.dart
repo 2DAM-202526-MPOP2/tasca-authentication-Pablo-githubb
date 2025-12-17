@@ -1,11 +1,11 @@
 import 'package:first_flutter/data/models/user.dart';
-import 'package:first_flutter/data/repositories/auth_repository.dart';
+import 'package:first_flutter/data/repositories/login_repository.dart';
 import 'package:flutter/material.dart';
 
-class AuthVM extends ChangeNotifier {
-  final IAuthRepository _authRepository;
+class LoginVM extends ChangeNotifier {
+  final ILoginRepository _authRepository;
 
-  AuthVM({required IAuthRepository authRepository})
+  LoginVM({required ILoginRepository authRepository})
     : _authRepository = authRepository;
 
   late User _username;

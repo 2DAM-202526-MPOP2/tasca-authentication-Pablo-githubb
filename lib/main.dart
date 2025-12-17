@@ -1,7 +1,8 @@
 import 'package:first_flutter/data/models/sentence.dart';
+import 'package:first_flutter/data/repositories/login_repository.dart';
 import 'package:first_flutter/data/repositories/sentence_repository.dart';
+import 'package:first_flutter/data/services/login_service.dart';
 import 'package:first_flutter/data/services/sentence_service.dart';
-import 'package:first_flutter/presentation/viewmodels/auth_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +19,12 @@ void main() {
           create: (context) => SentenceRepository(
             sentenceService: context.read(),
           ), //ISentenceRepository instance
+        ),
+
+        //Nous providers de autentication i authoritation
+        Provider<ILoginService>(create: (context) => LoginService()),
+        Provider<ILoginRepository>(
+          create: (context) => LoginRepository(authService: context.read()),
         ),
       ],
       child: const MyApp(),
@@ -61,6 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
         page = FavoritesPage();
       case 2:
         page = CreationPage();
+      case 3:
+        page = LoginPage();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -105,6 +114,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       NavigationRailDestination(
                         icon: Icon(Icons.create_rounded),
                         label: Text('Creation'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.exit_to_app),
+                        label: Text('Login'),
                       ),
                     ],
                     selectedIndex: selectedIndex,
@@ -339,3 +352,20 @@ class _CreationPageState extends State<CreationPage> {
   }
 }
 
+//Login
+
+class LoginPage extends StatefulWidget {
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  @override
+  Widget build(BuildContext context) {
+    
+    return Center(
+
+    );
+
+  }
+}
