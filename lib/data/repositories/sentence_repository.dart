@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:first_flutter/data/models/sentence.dart';
 import 'package:first_flutter/data/services/sentence_service.dart';
 
@@ -5,16 +7,19 @@ abstract class ISentenceRepository {
   List<Sentence> get history;
   List<Sentence> get favorites;
   Future<Sentence> get current;
-  
+
   Future<Sentence> getNext();
   void toggleFavorite(Sentence sentence);
   bool isFavorite(Sentence pair);
+
+  Stream<List<Sentence>> watchFavorites();
+
+  Future<Sentence> createSentence(String text);
 }
 
 class SentenceRepository implements ISentenceRepository {
-  SentenceRepository({
-    required ISentenceService sentenceService,
-  }) : _sentenceService = sentenceService;
+  SentenceRepository({required ISentenceService sentenceService})
+    : _sentenceService = sentenceService;
 
   final ISentenceService _sentenceService;
 
@@ -23,6 +28,9 @@ class SentenceRepository implements ISentenceRepository {
   var _favorites = <Sentence>[];
 
   var _history = <Sentence>[];
+
+  late final StreamController<List<Sentence>> _favoritesController =
+      StreamController<List<Sentence>>.broadcast();
 
   // Getters
   @override
@@ -47,10 +55,21 @@ class SentenceRepository implements ISentenceRepository {
     } else {
       _favorites.add(sentence);
     }
+    _favoritesController.add(List.from(_favorites));
   }
 
   @override
   bool isFavorite(Sentence pair) {
     return _favorites.contains(pair);
+  }
+
+  @override
+  Stream<List<Sentence>> watchFavorites() {
+    return _favoritesController.stream;
+  }
+
+  @override
+  Future<Sentence> createSentence(String text) async {
+    return await _sentenceService.createSentence(text);
   }
 }

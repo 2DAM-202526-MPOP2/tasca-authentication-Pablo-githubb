@@ -1,6 +1,7 @@
 import 'package:first_flutter/data/models/sentence.dart';
 import 'package:first_flutter/data/repositories/sentence_repository.dart';
 import 'package:first_flutter/data/services/sentence_service.dart';
+import 'package:first_flutter/presentation/viewmodels/auth_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -58,6 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GeneratorPage();
       case 1:
         page = FavoritesPage();
+      case 2:
+        page = CreationPage();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -98,6 +101,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       NavigationRailDestination(
                         icon: Icon(Icons.favorite),
                         label: Text('Favorites'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.create_rounded),
+                        label: Text('Creation'),
                       ),
                     ],
                     selectedIndex: selectedIndex,
@@ -259,3 +266,76 @@ class BigCard extends StatelessWidget {
     );
   }
 }
+
+/// Pantalla per crear una nova sentència
+/// L'usuari introdueix text, envia la crida i veu la resposta
+class CreationPage extends StatefulWidget {
+  @override
+  State<CreationPage> createState() => _CreationPageState();
+}
+
+class _CreationPageState extends State<CreationPage> {
+  /// Controller per capturar el text introduït a l'input
+  late TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var vm = context.watch<SentenceVM>();
+
+    return Center(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  /// Campo de text per introduir la nova sentència
+                  TextField(
+                    controller: _textController,
+                    enabled: !vm.isLoading,
+                  ),
+                  SizedBox(height: 30),
+
+                  /// Botó per enviar la crida a l'API (crear sentència)
+                  ElevatedButton.icon(
+                    onPressed: !vm.isLoading && _textController.text.isNotEmpty
+                        ? () async {
+                            /// Crida al ViewModel per crear la sentència
+                            await vm.createNewSentence(_textController.text);
+                          }
+                        : null,
+                    label: Text('Create Sentence'),
+                  ),
+
+                  /// Mostra la sentència creada
+                  if (vm.lastCreatedSentence != null && !vm.isLoading)
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        'You created the sentence: ${vm.lastCreatedSentence!.text}',
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+

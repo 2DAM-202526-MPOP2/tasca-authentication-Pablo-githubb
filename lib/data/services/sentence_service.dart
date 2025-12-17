@@ -5,13 +5,15 @@ import 'package:http/http.dart' as http;
 
 abstract class ISentenceService {
   Future<Sentence> getNext();
+
+  Future<Sentence> createSentence(String text);
 }
 
 class SentenceService implements ISentenceService {
   var count = 0;
   @override
   Future<Sentence> getNext() async {
-    count ++;
+    count++;
     var response = await http.get(
       Uri.parse('https://jsonplaceholder.typicode.com/albums/$count'),
     );
@@ -24,6 +26,12 @@ class SentenceService implements ISentenceService {
     } else {
       throw Exception('Failed to load album');
     }
+  }
 
+  @override
+  Future<Sentence> createSentence(String text) async {
+    await Future.delayed(Duration(milliseconds: 2000));
+
+    return Sentence(text: text);
   }
 }

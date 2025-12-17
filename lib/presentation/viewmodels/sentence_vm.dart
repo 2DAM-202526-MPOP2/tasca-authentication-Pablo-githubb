@@ -9,16 +9,18 @@ import '../../data/repositories/sentence_repository.dart';
 class SentenceVM extends ChangeNotifier {
   final ISentenceRepository _sentenceRepository;
 
+  SentenceVM({required ISentenceRepository sentenceRepository})
+    : _sentenceRepository = sentenceRepository {
+    _favorites = _sentenceRepository.favorites;
+    _history = _sentenceRepository.history;
+    _initCurrent();
+  }
   bool isLoading = false;
   // Internal State
   late Sentence _current;
-
-
-  SentenceVM({
-    required ISentenceRepository sentenceRepository,
-  }) : _sentenceRepository = sentenceRepository {
-    _initCurrent();
-  }
+  List<Sentence> _history = [];
+  List<Sentence> _favorites = [];
+  Sentence? _lastCreatedSentence;
 
   Future<void> _initCurrent() async {
     isLoading = true;
@@ -27,12 +29,11 @@ class SentenceVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  
-
   // Getters
   Sentence get current => _current;
   UnmodifiableListView<Sentence> get history => UnmodifiableListView(_sentenceRepository.history);
   UnmodifiableListView<Sentence> get favorites => UnmodifiableListView(_sentenceRepository.favorites);
+Sentence? get lastCreatedSentence => _lastCreatedSentence;
 
   Future<void> next() async {
     _current = await _sentenceRepository.getNext();
@@ -52,4 +53,16 @@ class SentenceVM extends ChangeNotifier {
     toggleFavorite(_current);
   }
 
+  Future<Sentence> createNewSentence(String text) async {
+    isLoading = true;
+    notifyListeners();
+    Sentence newSentence = await _sentenceRepository.createSentence(text);
+
+    _lastCreatedSentence = newSentence;
+
+    isLoading = false;
+    notifyListeners();
+
+    return newSentence;
+  }
 }

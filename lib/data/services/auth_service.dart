@@ -9,6 +9,7 @@ abstract class IAuthenticationService {
 }
 
 class AuthenticationService implements IAuthenticationService {
+  @override
   Future<User> validateLogin(String username, String password) async {
     final url = Uri.parse('https://dummyjson.com/auth/login');
     final response = await http.post(
@@ -25,9 +26,12 @@ class AuthenticationService implements IAuthenticationService {
       throw Exception('Login error'); // HTTP Error
     }
   }
-
+  
   @override
-  Future<Profile> getProfile(User user) async {
-    
+  Future<Profile> getProfile(User user) async{
+    // TODO: implement getProfile
+    throw UnimplementedError();
   }
+
+  
 }
