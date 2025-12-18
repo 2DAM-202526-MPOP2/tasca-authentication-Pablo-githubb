@@ -35,8 +35,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => SentenceVM(sentenceRepository: context.read()),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => SentenceVM(sentenceRepository: context.read()),
+        ),
+
+        ChangeNotifierProvider(
+          create: (context) => LoginVM(loginRepository: context.read()),
+        ),
+      ],
       child: MaterialApp(
         title: 'Namer App',
         theme: ThemeData(
@@ -323,10 +331,12 @@ class _CreationPageState extends State<CreationPage> {
 
                   /// Botó per enviar la crida a l'API (crear sentència)
                   ElevatedButton.icon(
-                    onPressed: () async {
-                      /// Crida al ViewModel per crear la sentència
-                      await vm.createNewSentence(_textController.text);
-                    },
+                    onPressed: _textController.text.isNotEmpty
+                        ? null
+                        : () async {
+                            /// Crida al ViewModel per crear la sentència
+                            await vm.createNewSentence(_textController.text);
+                          },
                     label: Text('Create Sentence'),
                   ),
 
@@ -360,28 +370,24 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     var vm = context.watch<LoginVM>();
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            SingleChildScrollView(
-              child: Column(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextField(
                     controller: vm.usernameController,
-                    decoration: InputDecoration(
-                      labelText: 'Username',
-                      border: OutlineInputBorder(),
-                    ),
+                    decoration: InputDecoration(labelText: 'Enter Username'),
                   ),
                   SizedBox(height: 20),
                   TextField(
                     controller: vm.passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(),
-                    ),
+                    decoration: InputDecoration(labelText: 'Enter Password'),
                   ),
+
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed:
@@ -393,10 +399,17 @@ class _LoginPageState extends State<LoginPage> {
                         : null,
                     child: Text('Login'),
                   ),
+
+                  if (vm.usernameController.text.isNotEmpty &&
+                      vm.passwordController.text.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text('You are logged in as: ${vm.username}'),
+                    ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

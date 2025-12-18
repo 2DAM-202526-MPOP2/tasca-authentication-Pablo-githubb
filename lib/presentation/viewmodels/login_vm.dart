@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 class LoginVM extends ChangeNotifier {
   final ILoginRepository _authRepository;
 
-  LoginVM({required ILoginRepository authRepository})
-    : _authRepository = authRepository;
+  LoginVM({required ILoginRepository loginRepository})
+    : _authRepository = loginRepository;
 
   late User _username;
   late User _authenticated;
@@ -30,8 +30,8 @@ class LoginVM extends ChangeNotifier {
         passwordController.text,
       );
       notifyListeners();
-    } catch (e) {
-      print(e);
+    } on Exception {
+      print(Exception);
     }
   }
 
