@@ -8,10 +8,10 @@ abstract class ILoginRepository {
 }
 
 class LoginRepository implements ILoginRepository {
-  LoginRepository({required ILoginService authService})
-    : _authService = authService;
+  LoginRepository({required ILoginService loginService})
+    : _loginService = loginService;
 
-  final ILoginService _authService;
+  final ILoginService _loginService;
   User? _user;
 
   //Retorna true si hi ha un usuari i la seva propietat authenticated és certa
@@ -30,7 +30,7 @@ class LoginRepository implements ILoginRepository {
 
   @override
   Future<User> validateLogin(String username, String password) async {
-    _user = await _authService.validateLogin(username, password);
+    _user = await _loginService.validateLogin(username, password);
     return _user!;
   }
 }

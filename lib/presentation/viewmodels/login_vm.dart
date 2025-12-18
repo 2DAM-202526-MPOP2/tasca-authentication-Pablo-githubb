@@ -19,4 +19,31 @@ class LoginVM extends ChangeNotifier {
   User get id => _id;
   User get email => _email;
   User get accesToken => _accesToken;
+
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  Future<void> login() async {
+    try {
+      _username = await _authRepository.validateLogin(
+        usernameController.text,
+        passwordController.text,
+      );
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> logout() async {
+    _username = User(username: '', authenticated: false);
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 }

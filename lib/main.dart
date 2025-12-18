@@ -3,6 +3,7 @@ import 'package:first_flutter/data/repositories/login_repository.dart';
 import 'package:first_flutter/data/repositories/sentence_repository.dart';
 import 'package:first_flutter/data/services/login_service.dart';
 import 'package:first_flutter/data/services/sentence_service.dart';
+import 'package:first_flutter/presentation/viewmodels/login_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,19 +13,16 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        Provider<ISentenceService>(
-          create: (context) => SentenceService(), // ISentenceService instance
-        ),
+        Provider<ISentenceService>(create: (context) => SentenceService()),
         Provider<ISentenceRepository>(
-          create: (context) => SentenceRepository(
-            sentenceService: context.read(),
-          ), //ISentenceRepository instance
+          create: (context) =>
+              SentenceRepository(sentenceService: context.read()),
         ),
 
         //Nous providers de autentication i authoritation
         Provider<ILoginService>(create: (context) => LoginService()),
         Provider<ILoginRepository>(
-          create: (context) => LoginRepository(authService: context.read()),
+          create: (context) => LoginRepository(loginService: context.read()),
         ),
       ],
       child: const MyApp(),
@@ -325,12 +323,10 @@ class _CreationPageState extends State<CreationPage> {
 
                   /// Botó per enviar la crida a l'API (crear sentència)
                   ElevatedButton.icon(
-                    onPressed: !vm.isLoading && _textController.text.isNotEmpty
-                        ? () async {
-                            /// Crida al ViewModel per crear la sentència
-                            await vm.createNewSentence(_textController.text);
-                          }
-                        : null,
+                    onPressed: () async {
+                      /// Crida al ViewModel per crear la sentència
+                      await vm.createNewSentence(_textController.text);
+                    },
                     label: Text('Create Sentence'),
                   ),
 
@@ -362,10 +358,47 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    
+    var vm = context.watch<LoginVM>();
     return Center(
-
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: vm.usernameController,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextField(
+                    controller: vm.passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed:
+                        vm.usernameController.text.isNotEmpty &&
+                            vm.passwordController.text.isNotEmpty
+                        ? () async {
+                            await vm.login();
+                          }
+                        : null,
+                    child: Text('Login'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
-
   }
 }

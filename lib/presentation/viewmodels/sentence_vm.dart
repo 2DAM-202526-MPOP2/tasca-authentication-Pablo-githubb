@@ -11,15 +11,12 @@ class SentenceVM extends ChangeNotifier {
 
   SentenceVM({required ISentenceRepository sentenceRepository})
     : _sentenceRepository = sentenceRepository {
-    _favorites = _sentenceRepository.favorites;
-    _history = _sentenceRepository.history;
     _initCurrent();
   }
   bool isLoading = false;
   // Internal State
   late Sentence _current;
-  List<Sentence> _history = [];
-  List<Sentence> _favorites = [];
+
   Sentence? _lastCreatedSentence;
 
   Future<void> _initCurrent() async {
@@ -31,9 +28,11 @@ class SentenceVM extends ChangeNotifier {
 
   // Getters
   Sentence get current => _current;
-  UnmodifiableListView<Sentence> get history => UnmodifiableListView(_sentenceRepository.history);
-  UnmodifiableListView<Sentence> get favorites => UnmodifiableListView(_sentenceRepository.favorites);
-Sentence? get lastCreatedSentence => _lastCreatedSentence;
+  UnmodifiableListView<Sentence> get history =>
+      UnmodifiableListView(_sentenceRepository.history);
+  UnmodifiableListView<Sentence> get favorites =>
+      UnmodifiableListView(_sentenceRepository.favorites);
+  Sentence? get lastCreatedSentence => _lastCreatedSentence;
 
   Future<void> next() async {
     _current = await _sentenceRepository.getNext();

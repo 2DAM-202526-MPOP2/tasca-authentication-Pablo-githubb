@@ -12,6 +12,7 @@ class LoginService implements ILoginService {
     final url = Uri.parse('https://httpbin.org/basic-auth/admin/adminpassword');
     final response = await http.get(
       url,
+
       headers: {
         'Authorization':
             'Basic ${base64Encode(utf8.encode('$username:$password'))}',
