@@ -368,7 +368,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    var vm = context.watch<LoginVM>();
+    LoginVM vm = context.watch<LoginVM>();
     return Center(
       child: SingleChildScrollView(
         child: Padding(
@@ -377,7 +377,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   TextField(
                     controller: vm.usernameController,
                     decoration: InputDecoration(labelText: 'Enter Username'),
@@ -400,8 +400,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text('Login'),
                   ),
 
-                  if (vm.usernameController.text.isNotEmpty &&
-                      vm.passwordController.text.isNotEmpty)
+                  if (vm.authenticated)
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Text('You are logged in as: ${vm.username}'),

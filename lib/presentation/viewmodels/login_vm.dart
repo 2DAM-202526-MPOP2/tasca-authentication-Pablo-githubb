@@ -8,35 +8,28 @@ class LoginVM extends ChangeNotifier {
   LoginVM({required ILoginRepository loginRepository})
     : _authRepository = loginRepository;
 
-  late User _username;
-  late User _authenticated;
-  late User _email;
-  late User _id;
-  late User _accesToken;
+  User? _currentUser;
 
-  User get username => _username;
-  User get authenticated => _authenticated;
-  User get id => _id;
-  User get email => _email;
-  User get accesToken => _accesToken;
+  String get username => _currentUser?.username ?? '';
+  bool get authenticated => _currentUser?.authenticated ?? false;
 
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   Future<void> login() async {
     try {
-      _username = await _authRepository.validateLogin(
+      _currentUser = await _authRepository.validateLogin(
         usernameController.text,
         passwordController.text,
       );
       notifyListeners();
-    } on Exception {
-      print(Exception);
+    } on Exception catch (e) {
+      print(e);
     }
   }
 
   Future<void> logout() async {
-    _username = User(username: '', authenticated: false);
+    _currentUser = null;
     notifyListeners();
   }
 
